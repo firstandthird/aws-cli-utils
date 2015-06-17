@@ -1,40 +1,28 @@
-var AWS = require('aws-sdk');
-var Table = require('cli-table');
+#!/usr/bin/env node
 
-AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: 'leanin' });
+var conf = require('./lib/bootstrap');
 
-var ec2 = function() {
-  var ec2 = new AWS.EC2({ region: 'us-east-1' });
+var action = conf.action;
+var aws = conf.aws;
+var region = conf.region;
+var argv = conf.argv;
 
-  ec2.describeInstances({}, function(err, data) {
-    if (err) {
-      throw err;
-    }
 
-    var table = new Table({
-      head: ['Name', 'State', 'Public DNS', 'Public IP']
-    });
+switch(action) {
+  case 'ec2':
+    var act = require('./lib/ec2');
+  break;
 
-    data.Reservations.forEach(function(reservation) {
+  case 'log':
+    var act = require('./lib/logs');
+  break;
+}
 
-      reservation.Instances.forEach(function(instance) {
-        console.log(instance);
-        var name = instance.Tags.filter(function(tag) {
-          return tag.Key == 'Name';
-        })[0].Value;
+act(aws, region, argv);
 
-        var dns = instance.PublicDnsName;
-        var ip = instance.PublicIpAddress;
 
-        table.push([name, instance.State.Name, dns, ip]);
-
-      });
-
-    });
-
-    console.log(table.toString());
-  });
-
-};
-
-ec2();
+// try {
+//  act(aws, region, argv);
+// } catch(e) {
+//   console.log(e);
+// }
