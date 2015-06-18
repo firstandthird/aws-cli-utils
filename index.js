@@ -12,7 +12,6 @@ switch(action) {
   case 'ec2':
     var act = require('./lib/ec2');
   break;
-
   case 'log':
     var act = require('./lib/logs');
   break;
