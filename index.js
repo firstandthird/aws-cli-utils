@@ -15,7 +15,11 @@ switch(action) {
   case 'log':
     var act = require('./lib/logs');
   break;
+  default:
+   var act = require('./lib/help');
 }
+
+
 
 act(aws, region, argv);
 
